@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Workflow Primer — AI-TEC</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --navy:   #000066;
+  --gold:   #FFC000;
+  --purple: #6600FF;
+  --green:  #33CC33;
+  --teal:   #0B5563;
+  --red:    #CC2200;
+  --cream:  #F8F5EE;
+  --dark:   #0A0A1A;
+}
+ 
+body {
+  background: var(--cream);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+}
+ 
+.poster {
+  max-width: 960px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+ 
+/* ── HEADER BAND ── */
+.header-band {
+  background: var(--navy);
+  padding: 28px 40px 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+.header-eyebrow {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.header-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  color: #fff;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+}
+.header-title span { color: var(--gold); }
+.header-rule {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 900;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  color: var(--green);
+  text-align: right;
+  max-width: 320px;
+  line-height: 1.4;
+}
+.header-rule em {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+ 
+/* ── THE MAGNIFIER STATEMENT ── */
+.magnifier-band {
+  background: var(--gold);
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.magnifier-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+.magnifier-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  color: var(--navy);
+  letter-spacing: 0.04em;
+}
+.magnifier-text span {
+  color: var(--purple);
+}
+.magnifier-sub {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+  opacity: 0.7;
+  margin-left: auto;
+  text-align: right;
+  max-width: 260px;
+  line-height: 1.3;
+}
+ 
+/* ── PROBLEM PANEL ── */
+.problem-panel {
+  background: #1A0A2E;
+  padding: 32px 40px;
+  position: relative;
+}
+.problem-panel::before {
+  content: 'THE PROBLEM';
+  position: absolute;
+  top: 18px;
+  left: 40px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.25);
+}
+.panel-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  letter-spacing: 0.04em;
+  margin-top: 20px;
+  margin-bottom: 24px;
+  line-height: 1;
+}
+.panel-headline .accent { color: var(--red); }
+ 
+.gigo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+ 
+.gigo-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 20px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.gigo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--red);
+}
+.gigo-card.data::before { background: #FF6600; }
+.gigo-card.prompt::before { background: #FF9900; }
+ 
+.gigo-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: rgba(255,255,255,0.08);
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  line-height: 1;
+}
+.gigo-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.gigo-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--red);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.gigo-card.data .gigo-label { color: #FF6600; }
+.gigo-card.prompt .gigo-label { color: #FF9900; }
+ 
+.gigo-problem {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.gigo-result {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.4;
+}
+.gigo-result strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+ 
+.problem-footer {
+  background: rgba(204,34,0,0.15);
+  border: 1px solid rgba(204,34,0,0.3);
+  border-radius: 6px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.problem-footer-icon { font-size: 1.4rem; flex-shrink: 0; }
+.problem-footer-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.4;
+}
+.problem-footer-text em {
+  font-style: normal;
+  color: var(--gold);
+}
+ 
+/* ── DIVIDER ARROW ── */
+.divider {
+  background: var(--gold);
+  text-align: center;
+  padding: 8px;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+ 
+/* ── SOLUTION PANEL ── */
+.solution-panel {
+  background: var(--teal);
+  padding: 32px 40px;
+  position: relative;
+}
+.solution-panel::before {
+  content: 'THE SOLUTION';
+  position: absolute;
+  top: 18px;
+  left: 40px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.25);
+}
+ 
+.solution-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: #fff;
+  letter-spacing: 0.04em;
+  margin-top: 20px;
+  margin-bottom: 24px;
+  line-height: 1;
+}
+.solution-headline .accent { color: var(--green); }
+ 
+.solution-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+ 
+.solution-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 20px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.solution-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--green);
+}
+.solution-card.data::before { background: #00CCAA; }
+.solution-card.prompt::before { background: var(--gold); }
+ 
+.sol-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.sol-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.solution-card.data .sol-label { color: #00CCAA; }
+.solution-card.prompt .sol-label { color: var(--gold); }
+ 
+.sol-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.sol-detail {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+}
+.sol-detail strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+ 
+/* ── RULES BAND ── */
+.rules-band {
+  background: var(--navy);
+  padding: 24px 40px;
+}
+.rules-headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--purple);
+}
+.rule-x {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.rule-text {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.4;
+  font-weight: 600;
+}
+.rule-text em {
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+ 
+/* ── VERSION 1 REMINDER ── */
+.v1-band {
+  background: var(--purple);
+  padding: 16px 40px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+.v1-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+.v1-text {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+}
+.v1-text strong { color: var(--gold); }
+ 
+/* ── FOOTER ── */
+.poster-footer {
+  background: var(--navy);
+  border-top: 3px solid var(--gold);
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.footer-cta {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+.footer-cta span { color: var(--gold); }
+.footer-brand {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  text-align: right;
+  line-height: 1.5;
+}
+ 
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .header-band, .magnifier-band, .problem-panel,
+  .solution-panel, .rules-band, .v1-band, .poster-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .gigo-grid, .solution-grid { grid-template-columns: 1fr; }
+  .rules-grid { grid-template-columns: 1fr; }
+  .magnifier-sub { display: none; }
+  .header-rule { display: none; }
+  .v1-band { grid-template-columns: 1fr; }
+  .poster-footer { flex-direction: column; align-items: flex-start; }
+  .footer-brand { text-align: left; }
+}
+</style>
+</head>
+<body>
+<div class="poster">
+ 
+  <!-- HEADER -->
+  <div class="header-band">
+    <div>
+      <div class="header-eyebrow">Americas AI Tactical Enablement Centre &nbsp;·&nbsp; Pre-Week 1 Required Reading</div>
+      <div class="header-title">AI <span>Workflow</span><br>Primer</div>
+    </div>
+    <div class="header-rule">
+      Read this before completing<br>your Workflow Worksheet.
+      <em>What you put in determines what you get out.</em>
+    </div>
+  </div>
+ 
+  <!-- MAGNIFIER STATEMENT -->
+  <div class="magnifier-band">
+    <div class="magnifier-icon">🔍</div>
+    <div class="magnifier-text">AI is a <span>Magnifier</span> — Not a Fixer.</div>
+    <div class="magnifier-sub">Good in → multiplied value.<br>Bad in → multiplied mess.</div>
+  </div>
+ 
+  <!-- ILLUSTRATION: MESSY VS CLEAN -->
+  <div style="background:#0A0A1A; line-height:0;">
+  <svg viewBox="0 0 960 310" xmlns="http://www.w3.org/2000/svg" width="100%" style="display:block;">
+    <defs>
+      <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M1 2L8 5L1 8" fill="none" stroke="#CC4400" stroke-width="1.5"/>
+      </marker>
+      <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M1 2L8 5L1 8" fill="none" stroke="#33CC33" stroke-width="1.5"/>
+      </marker>
+    </defs>
+ 
+    <!-- BACKGROUNDS -->
+    <rect x="0" y="0" width="448" height="310" fill="#1C0A0A"/>
+    <rect x="448" y="0" width="64" height="310" fill="#080812"/>
+    <rect x="512" y="0" width="448" height="310" fill="#041C18"/>
+ 
+    <!-- CENTER VS -->
+    <text x="480" y="162" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="30" fill="#FFC000" letter-spacing="3">VS</text>
+    <line x1="480" y1="30" x2="480" y2="130" stroke="#FFC000" stroke-width="1" opacity="0.2"/>
+    <line x1="480" y1="185" x2="480" y2="290" stroke="#FFC000" stroke-width="1" opacity="0.2"/>
+ 
+    <!-- ══ LEFT LABELS ══ -->
+    <text x="224" y="22" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="8" font-weight="700" fill="#CC4400" letter-spacing="2" opacity="0.9">MESSY DATA + BROKEN WORKFLOW  →  AI  →  BIGGER MESS</text>
+ 
+    <!-- ══ MESSY DOCUMENTS ══ -->
+    <g transform="rotate(-14,64,118)">
+      <rect x="28" y="82" width="52" height="68" rx="3" fill="#330A0A" stroke="#CC4400" stroke-width="1.5"/>
+      <path d="M36 100 Q44 95 52 100 Q60 105 68 100 Q76 95 78 100" stroke="#CC4400" stroke-width="1" fill="none" opacity="0.5"/>
+      <line x1="36" y1="112" x2="72" y2="112" stroke="#CC4400" stroke-width="1" opacity="0.4"/>
+      <path d="M36 124 Q44 119 52 124 Q60 129 68 124" stroke="#CC4400" stroke-width="1" fill="none" opacity="0.3"/>
+      <line x1="36" y1="138" x2="52" y2="139" stroke="#CC4400" stroke-width="2" opacity="0.7"/>
+      <line x1="52" y1="138" x2="36" y2="139" stroke="#CC4400" stroke-width="2" opacity="0.7"/>
+    </g>
+    <g transform="rotate(20,90,140)">
+      <rect x="62" y="108" width="52" height="68" rx="3" fill="#2A0808" stroke="#FF5500" stroke-width="1.5"/>
+      <path d="M70 126 Q78 121 86 126 Q94 131 102 126 Q110 121 112 126" stroke="#FF5500" stroke-width="1" fill="none" opacity="0.5"/>
+      <line x1="70" y1="138" x2="106" y2="138" stroke="#FF5500" stroke-width="1" opacity="0.4"/>
+      <text x="86" y="163" font-family="'Barlow',sans-serif" font-size="18" fill="#FF5500" opacity="0.8" font-weight="900" text-anchor="middle">?</text>
+    </g>
+    <g transform="rotate(-6,102,170)">
+      <rect x="74" y="148" width="52" height="64" rx="3" fill="#350E0E" stroke="#CC2200" stroke-width="1.5"/>
+      <path d="M82 165 Q90 160 98 165 Q106 170 114 165" stroke="#CC2200" stroke-width="1" fill="none" opacity="0.5"/>
+      <line x1="82" y1="178" x2="116" y2="178" stroke="#CC2200" stroke-width="1" opacity="0.4"/>
+      <line x1="82" y1="190" x2="110" y2="190" stroke="#CC2200" stroke-width="1" opacity="0.3"/>
+    </g>
+    <g transform="rotate(28,55,175)">
+      <rect x="18" y="152" width="46" height="60" rx="3" fill="#2A0808" stroke="#FF4400" stroke-width="1.5"/>
+      <path d="M26 168 Q32 163 38 168 Q44 173 50 168 Q56 163 60 168" stroke="#FF4400" stroke-width="1" fill="none" opacity="0.5"/>
+      <line x1="26" y1="180" x2="56" y2="180" stroke="#FF4400" stroke-width="1" opacity="0.3"/>
+    </g>
+ 
+    <!-- Floating ? marks -->
+    <text x="140" y="72" font-family="'Bebas Neue',sans-serif" font-size="24" fill="#CC4400" opacity="0.6">?</text>
+    <text x="18" y="70" font-family="'Bebas Neue',sans-serif" font-size="16" fill="#FF6600" opacity="0.5">?</text>
+    <text x="118" y="218" font-family="'Bebas Neue',sans-serif" font-size="20" fill="#CC2200" opacity="0.5">?</text>
+ 
+    <!-- Tangled workflow arrows -->
+    <path d="M152 128 Q174 80 196 125 Q218 168 196 100 Q174 32 210 132 Q228 178 215 148" stroke="#CC4400" stroke-width="2" fill="none" opacity="0.7" marker-end="url(#arr-red)"/>
+    <path d="M158 158 Q180 208 200 162 Q220 116 202 185" stroke="#FF6600" stroke-width="1.5" fill="none" opacity="0.45"/>
+ 
+    <!-- AI CIRCLE LEFT (messy) -->
+    <circle cx="258" cy="155" r="40" fill="#180804" stroke="#CC4400" stroke-width="2"/>
+    <circle cx="258" cy="155" r="34" fill="#200A06" stroke="#CC4400" stroke-width="1" opacity="0.4" stroke-dasharray="4 4"/>
+    <text x="258" y="147" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#FFC000" letter-spacing="2">AI</text>
+    <path d="M262 156 L255 167 L260 167 L254 180 L264 165 L259 165Z" fill="#FFC000" opacity="0.85"/>
+ 
+    <!-- Arrow docs → AI (messy) -->
+    <line x1="162" y1="155" x2="216" y2="155" stroke="#CC4400" stroke-width="2" marker-end="url(#arr-red)" opacity="0.7"/>
+    <!-- Arrow AI → output (messy) -->
+    <line x1="299" y1="155" x2="316" y2="155" stroke="#CC4400" stroke-width="2.5" marker-end="url(#arr-red)"/>
+ 
+    <!-- MAGNIFIED MESSY OUTPUT -->
+    <g transform="rotate(-16,362,108)">
+      <rect x="320" y="76" width="62" height="82" rx="3" fill="#330A0A" stroke="#CC4400" stroke-width="2"/>
+      <path d="M329 94 Q339 88 349 94 Q359 100 369 94 Q379 88 382 94" stroke="#CC4400" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <path d="M329 109 Q339 103 349 109 Q359 115 369 109" stroke="#CC4400" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <line x1="329" y1="124" x2="370" y2="124" stroke="#CC4400" stroke-width="1" opacity="0.4"/>
+      <line x1="329" y1="138" x2="355" y2="139" stroke="#CC4400" stroke-width="2.5" opacity="0.8"/>
+      <line x1="355" y1="138" x2="329" y2="139" stroke="#CC4400" stroke-width="2.5" opacity="0.8"/>
+    </g>
+    <g transform="rotate(22,388,168)">
+      <rect x="348" y="138" width="64" height="80" rx="3" fill="#2A0A0A" stroke="#FF4400" stroke-width="2"/>
+      <path d="M357 156 Q367 150 377 156 Q387 162 397 156 Q407 150 412 156" stroke="#FF4400" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <text x="384" y="198" font-family="'Barlow',sans-serif" font-size="22" fill="#FF4400" opacity="0.8" font-weight="900" text-anchor="middle">?</text>
+    </g>
+    <g transform="rotate(-9,355,210)">
+      <rect x="318" y="185" width="56" height="72" rx="3" fill="#350E0E" stroke="#CC2200" stroke-width="2"/>
+      <path d="M326 202 Q334 196 342 202 Q350 208 358 202 Q366 196 372 202" stroke="#CC2200" stroke-width="1.5" fill="none" opacity="0.5"/>
+      <line x1="326" y1="218" x2="362" y2="218" stroke="#CC2200" stroke-width="1" opacity="0.4"/>
+      <line x1="326" y1="230" x2="354" y2="230" stroke="#CC2200" stroke-width="1" opacity="0.3"/>
+    </g>
+ 
+    <!-- More ? around output -->
+    <text x="408" y="82" font-family="'Bebas Neue',sans-serif" font-size="26" fill="#CC4400" opacity="0.7">?</text>
+    <text x="312" y="258" font-family="'Bebas Neue',sans-serif" font-size="20" fill="#FF6600" opacity="0.5">?</text>
+    <text x="415" y="240" font-family="'Bebas Neue',sans-serif" font-size="18" fill="#CC2200" opacity="0.6">?</text>
+ 
+    <!-- FRUSTRATED HUMAN -->
+    <circle cx="418" cy="120" r="27" fill="#2A1010" stroke="#CC4400" stroke-width="2"/>
+    <!-- Furrowed brows -->
+    <line x1="405" y1="110" x2="415" y2="114" stroke="rgba(255,255,255,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="421" y1="114" x2="431" y2="110" stroke="rgba(255,255,255,0.75)" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Eyes -->
+    <circle cx="411" cy="119" r="2.5" fill="rgba(255,255,255,0.85)"/>
+    <circle cx="425" cy="119" r="2.5" fill="rgba(255,255,255,0.85)"/>
+    <!-- Downturned mouth -->
+    <path d="M409 132 Q418 126 427 132" stroke="rgba(255,255,255,0.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Sweat drops -->
+    <path d="M444 101 Q446 95 449 101 Q449 107 446 108 Q443 107 444 101Z" fill="#4488FF" opacity="0.75"/>
+    <path d="M406 94 Q408 89 410 94 Q410 99 408 100 Q406 99 406 94Z" fill="#4488FF" opacity="0.65"/>
+    <path d="M448 120 Q450 115 452 120 Q452 125 450 126 Q448 125 448 120Z" fill="#4488FF" opacity="0.55"/>
+    <!-- Pain lightning -->
+    <path d="M401 97 L395 108 L400 108 L394 119" stroke="#FFC000" stroke-width="2" fill="none" opacity="0.85"/>
+    <path d="M448 97 L454 108 L449 108 L455 120" stroke="#FFC000" stroke-width="2" fill="none" opacity="0.75"/>
+    <!-- Body -->
+    <rect x="401" y="147" width="34" height="52" rx="6" fill="#2A1010" stroke="#CC4400" stroke-width="2"/>
+    <!-- Arms up (frustrated) -->
+    <path d="M401 162 Q387 148 378 136" stroke="#CC4400" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="376" cy="134" r="7" fill="#2A1010" stroke="#CC4400" stroke-width="2"/>
+    <path d="M435 162 Q447 146 440 130" stroke="#CC4400" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="440" cy="128" r="7" fill="#2A1010" stroke="#CC4400" stroke-width="2"/>
+    <!-- Legs -->
+    <rect x="403" y="197" width="12" height="42" rx="5" fill="#2A1010" stroke="#CC4400" stroke-width="1.5"/>
+    <rect x="421" y="197" width="12" height="42" rx="5" fill="#2A1010" stroke="#CC4400" stroke-width="1.5"/>
+ 
+    <!-- Left footer label -->
+    <text x="224" y="286" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#CC4400" letter-spacing="3" opacity="0.9">BIGGER MESS.  MORE PAIN.  FASTER FAILURE.</text>
+ 
+    <!-- ══ RIGHT: CLEAN SIDE ══ -->
+    <text x="736" y="22" text-anchor="middle" font-family="'Barlow',sans-serif" font-size="8" font-weight="700" fill="#33CC33" letter-spacing="2" opacity="0.9">CLEAN DATA + MAPPED WORKFLOW  →  AI  →  MULTIPLIED VALUE</text>
+ 
+    <!-- CLEAN DOCUMENTS STACK -->
+    <rect x="530" y="95" width="62" height="84" rx="4" fill="#0A2A20" stroke="#1A8060" stroke-width="1" opacity="0.45"/>
+    <rect x="524" y="89" width="62" height="84" rx="4" fill="#0D3328" stroke="#33CC33" stroke-width="1.5" opacity="0.65"/>
+    <rect x="518" y="83" width="62" height="84" rx="4" fill="#0F3D30" stroke="#33CC33" stroke-width="2"/>
+    <line x1="527" y1="100" x2="571" y2="100" stroke="#33CC33" stroke-width="1.5" opacity="0.75"/>
+    <line x1="527" y1="112" x2="568" y2="112" stroke="#33CC33" stroke-width="1.5" opacity="0.65"/>
+    <line x1="527" y1="123" x2="570" y2="123" stroke="#33CC33" stroke-width="1" opacity="0.55"/>
+    <line x1="527" y1="133" x2="564" y2="133" stroke="#33CC33" stroke-width="1" opacity="0.45"/>
+    <path d="M527 147 L535 156 L553 138" stroke="#33CC33" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+ 
+    <!-- Clean workflow steps -->
+    <rect x="518" y="192" width="38" height="26" rx="4" fill="#0F3D30" stroke="#33CC33" stroke-width="1.5"/>
+    <text x="537" y="209" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#33CC33" letter-spacing="1">STEP 1</text>
+    <line x1="557" y1="205" x2="567" y2="205" stroke="#33CC33" stroke-width="1.5" marker-end="url(#arr-green)"/>
+    <rect x="568" y="192" width="38" height="26" rx="4" fill="#0F3D30" stroke="#33CC33" stroke-width="1.5"/>
+    <text x="587" y="209" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#33CC33" letter-spacing="1">STEP 2</text>
+    <line x1="607" y1="205" x2="617" y2="205" stroke="#33CC33" stroke-width="1.5" marker-end="url(#arr-green)"/>
+    <rect x="618" y="192" width="38" height="26" rx="4" fill="#0F3D30" stroke="#33CC33" stroke-width="1.5"/>
+    <text x="637" y="209" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#33CC33" letter-spacing="1">STEP 3</text>
+    <path d="M657 202 L662 208 L673 196" stroke="#33CC33" stroke-width="2" fill="none" stroke-linecap="round"/>
+ 
+    <!-- Arrow docs → AI (clean) -->
+    <line x1="664" y1="155" x2="684" y2="155" stroke="#33CC33" stroke-width="2" marker-end="url(#arr-green)" opacity="0.75"/>
+ 
+    <!-- AI CIRCLE RIGHT (clean) -->
+    <circle cx="716" cy="155" r="40" fill="#041C18" stroke="#33CC33" stroke-width="2"/>
+    <circle cx="716" cy="155" r="34" fill="#062018" stroke="#33CC33" stroke-width="1" opacity="0.45" stroke-dasharray="4 4"/>
+    <text x="716" y="147" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#FFC000" letter-spacing="2">AI</text>
+    <path d="M720 156 L713 167 L718 167 L712 180 L722 165 L717 165Z" fill="#33CC33" opacity="0.9"/>
+ 
+    <!-- Arrow AI → amplified output -->
+    <line x1="757" y1="155" x2="774" y2="155" stroke="#33CC33" stroke-width="2.5" marker-end="url(#arr-green)"/>
+ 
+    <!-- AMPLIFIED CLEAN OUTPUT -->
+    <rect x="782" y="73" width="74" height="98" rx="4" fill="#0A2A20" stroke="#1A8060" stroke-width="1" opacity="0.4"/>
+    <rect x="776" y="67" width="74" height="98" rx="4" fill="#0D3328" stroke="#33CC33" stroke-width="1.5" opacity="0.6"/>
+    <rect x="770" y="61" width="74" height="98" rx="4" fill="#0F3D30" stroke="#33CC33" stroke-width="2.5"/>
+    <line x1="780" y1="80" x2="834" y2="80" stroke="#33CC33" stroke-width="2" opacity="0.8"/>
+    <line x1="780" y1="93" x2="831" y2="93" stroke="#33CC33" stroke-width="1.5" opacity="0.7"/>
+    <line x1="780" y1="105" x2="835" y2="105" stroke="#33CC33" stroke-width="1.5" opacity="0.6"/>
+    <line x1="780" y1="117" x2="828" y2="117" stroke="#33CC33" stroke-width="1" opacity="0.5"/>
+    <line x1="780" y1="128" x2="832" y2="128" stroke="#33CC33" stroke-width="1" opacity="0.4"/>
+    <path d="M780 142 L793 155 L834 113" stroke="#33CC33" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+ 
+    <!-- Stars / sparkles -->
+    <path d="M852 70 L855 62 L858 70 L866 67 L860 73 L863 81 L855 76 L847 81 L850 73 L844 67Z" fill="#FFC000" opacity="0.85"/>
+    <path d="M769 57 L771 51 L773 57 L779 55 L775 59 L777 65 L771 62 L765 65 L767 59 L763 55Z" fill="#33CC33" opacity="0.75"/>
+    <path d="M854 170 L856 165 L858 170 L863 168 L859 172 L861 177 L856 174 L851 177 L853 172 L849 168Z" fill="#FFC000" opacity="0.6"/>
+    <!-- Up arrows (value rising) -->
+    <path d="M842 152 L842 140" stroke="#33CC33" stroke-width="2" marker-end="url(#arr-green)" opacity="0.7"/>
+    <path d="M852 148 L852 133" stroke="#33CC33" stroke-width="1.5" marker-end="url(#arr-green)" opacity="0.5"/>
+ 
+    <!-- CONFIDENT HUMAN -->
+    <circle cx="918" cy="120" r="27" fill="#0F3D30" stroke="#33CC33" stroke-width="2"/>
+    <line x1="906" y1="111" x2="914" y2="111" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="922" y1="111" x2="930" y2="111" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="912" cy="119" r="3" fill="rgba(255,255,255,0.9)"/>
+    <circle cx="924" cy="119" r="3" fill="rgba(255,255,255,0.9)"/>
+    <path d="M910 132 Q918 140 926 132" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <rect x="902" y="147" width="34" height="52" rx="6" fill="#0F3D30" stroke="#33CC33" stroke-width="2"/>
+    <!-- Thumbs up left arm -->
+    <path d="M902 162 Q890 165 884 156" stroke="#33CC33" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="882" cy="154" r="7" fill="#0F3D30" stroke="#33CC33" stroke-width="2"/>
+    <line x1="882" y1="147" x2="882" y2="141" stroke="#33CC33" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Right arm relaxed -->
+    <path d="M936 164 Q945 172 943 183" stroke="#33CC33" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="943" cy="185" r="7" fill="#0F3D30" stroke="#33CC33" stroke-width="2"/>
+    <!-- Legs -->
+    <rect x="904" y="197" width="12" height="42" rx="5" fill="#0F3D30" stroke="#33CC33" stroke-width="1.5"/>
+    <rect x="920" y="197" width="12" height="42" rx="5" fill="#0F3D30" stroke="#33CC33" stroke-width="1.5"/>
+    <!-- Happy sparkles -->
+    <path d="M944 105 L946 99 L948 105 L954 103 L950 107 L952 113 L946 110 L940 113 L942 107 L938 103Z" fill="#FFC000" opacity="0.75"/>
+    <path d="M898 96 L899 92 L900 96 L904 95 L901 98 L902 102 L899 100 L896 102 L897 98 L894 95Z" fill="#33CC33" opacity="0.65"/>
+ 
+    <!-- Right footer label -->
+    <text x="736" y="286" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="13" fill="#33CC33" letter-spacing="3" opacity="0.9">MULTIPLIED VALUE.  LESS EFFORT.  REAL RESULTS.</text>
+  </svg>
+  </div>
+ 
+  <!-- PROBLEM PANEL -->
+  <div class="problem-panel">
+    <div class="panel-headline">Garbage In, Garbage Out.<br><span class="accent">Three Ways to Break AI</span> Before You Even Start.</div>
+ 
+    <div class="gigo-grid">
+ 
+      <!-- WORKFLOW -->
+      <div class="gigo-card workflow">
+        <div class="gigo-number">01</div>
+        <div class="gigo-icon">🔀</div>
+        <div class="gigo-label">Broken Workflow</div>
+        <div class="gigo-problem">Your process is broken before AI touches it.</div>
+        <div class="gigo-result">
+          Redundant steps, unclear ownership, nobody knows why Step 6 exists.
+          <br><br>
+          <strong>AI makes broken faster.</strong> You get the same mess — at 10× speed. The dysfunction is now automated.
+        </div>
+      </div>
+ 
+      <!-- DATA -->
+      <div class="gigo-card data">
+        <div class="gigo-number">02</div>
+        <div class="gigo-icon">🗃️</div>
+        <div class="gigo-label">Dirty Data</div>
+        <div class="gigo-problem">Scanned PDFs. Inconsistent naming. Messy spreadsheets.</div>
+        <div class="gigo-result">
+          Scanned PDFs fail 60–80% of the time. DOCX tables flatten into unreadable text. Three names for the same thing = three different things to AI.
+          <br><br>
+          <strong>Dirty data produces confident wrong answers.</strong>
+        </div>
+      </div>
+ 
+      <!-- PROMPT -->
+      <div class="gigo-card prompt">
+        <div class="gigo-number">03</div>
+        <div class="gigo-icon">💬</div>
+        <div class="gigo-label">Vague Prompt</div>
+        <div class="gigo-problem">"Make it better." "Summarise this." "You know what I need."</div>
+        <div class="gigo-result">
+          AI has no memory, no context, and no intuition. It only knows what you tell it — right now, in this conversation.
+          <br><br>
+          <strong>Vague ask = vague answer.</strong> Every time.
+        </div>
+      </div>
+ 
+    </div>
+ 
+    <div class="problem-footer">
+      <div class="problem-footer-icon">⚠️</div>
+      <div class="problem-footer-text">
+        Garbage In, Garbage Out (GIGO) is not just a prompt problem. It is a <em>workflow problem</em>, a <em>data problem</em>, and a <em>prompt problem</em> — all three, simultaneously. Fix all three or fix nothing.
+      </div>
+    </div>
+  </div>
+ 
+  <!-- DIVIDER -->
+  <div class="divider">▼</div>
+ 
+  <!-- SOLUTION PANEL -->
+  <div class="solution-panel">
+    <div class="solution-headline">What AI Needs From You.<br><span class="accent">Three Things. No Shortcuts.</span></div>
+ 
+    <div class="solution-grid">
+ 
+      <!-- WORKFLOW -->
+      <div class="solution-card workflow">
+        <div class="sol-icon">🗺️</div>
+        <div class="sol-label">Mapped Workflow</div>
+        <div class="sol-title">Every step. Every owner. Every decision point.</div>
+        <div class="sol-detail">
+          Who does what. What triggers each step. How long it takes. What Must Have vs Nice to Have.
+          <br><br>
+          <strong>No map = no bot.</strong> The Workflow Worksheet is how you build the map.
+        </div>
+      </div>
+ 
+      <!-- DATA -->
+      <div class="solution-card data">
+        <div class="sol-icon">🧹</div>
+        <div class="sol-label">Clean Data</div>
+        <div class="sol-title">Right format. Complete. Consistent naming.</div>
+        <div class="sol-detail">
+          CSV, TXT, MD = reliable. Native PDF simple layout = workable. Scanned anything = high risk.
+          <br><br>
+          <strong>Prepare your data before Discovery</strong> — not during Week 2.
+        </div>
+      </div>
+ 
+      <!-- PROMPT -->
+      <div class="solution-card prompt">
+        <div class="sol-icon">🎯</div>
+        <div class="sol-label">Clear End Game</div>
+        <div class="sol-title">One sentence. What does the bot produce?</div>
+        <div class="sol-detail">
+          Not "be more efficient." Not "help with documents." One specific output that a real person uses in their real work, today.
+          <br><br>
+          <strong>If you can't say it in one sentence, you're not ready.</strong>
+        </div>
+      </div>
+ 
+    </div>
+ 
+    <div class="problem-footer" style="background: rgba(51,204,51,0.12); border-color: rgba(51,204,51,0.3);">
+      <div class="problem-footer-icon">✅</div>
+      <div class="problem-footer-text" style="color: rgba(255,255,255,0.9);">
+        When your workflow is mapped, your data is clean, and your end game is clear — AI stops being a gamble and starts being a <em style="color: var(--green);">multiplier</em>.
+      </div>
+    </div>
+  </div>
+ 
+  <!-- RULES: WHAT AI CANNOT DO -->
+  <div class="rules-band">
+    <div class="rules-headline">What AI Cannot Do — Ever</div>
+    <div class="rules-grid">
+      <div class="rule-item">
+        <div class="rule-x">🚫</div>
+        <div class="rule-text">Fix a broken process
+          <em>AI accelerates what exists. If the process is broken, you get a faster broken process.</em>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-x">🚫</div>
+        <div class="rule-text">Read between the lines
+          <em>AI has no memory between sessions and no access to context you haven't provided.</em>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-x">🚫</div>
+        <div class="rule-text">Handle "it depends" without rules
+          <em>Every IF condition must be defined. If you can't write the rule, the bot can't apply it.</em>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-x">🚫</div>
+        <div class="rule-text">Extract reliably from scanned PDFs
+          <em>60–80% failure rate. If your workflow runs on scanned documents, flag it before Discovery.</em>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- VERSION 1 REMINDER -->
+  <div class="v1-band">
+    <div class="v1-label">V1<br>Rule</div>
+    <div class="v1-text">
+      <strong>Start with your Must Have steps only.</strong> One bot. One workflow. Core use case first.<br>
+      Build it. Validate it. Then expand. Every enhancement is Version 2 — not Version 1.
+      Your Ambassadors (SE Pod) will help you identify what belongs in V1 during Discovery.
+    </div>
+  </div>
+ 
+  <!-- FOOTER: 4 GATES -->
+  <div style="background:var(--navy); padding: 24px 40px 0;">
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.18em; color:var(--gold); margin-bottom:14px;">Complete All Four Before Requesting Your Discovery Meeting</div>
+    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; padding-bottom:24px;">
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,192,0,0.25); border-top:3px solid var(--gold); border-radius:6px; padding:14px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.05rem; color:var(--gold); letter-spacing:0.06em; margin-bottom:6px;">01 &nbsp;ADKAR Checklist</div>
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.7); line-height:1.5;">Phase 1 completed at <strong style="color:#fff;">75% or above</strong> before Week 1 Discovery. Measures awareness and desire — your team must want this change.</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,192,0,0.25); border-top:3px solid var(--purple); border-radius:6px; padding:14px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.05rem; color:#9966FF; letter-spacing:0.06em; margin-bottom:6px;">02 &nbsp;AI Workflow Primer</div>
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.7); line-height:1.5;">This document. Read it with your <strong style="color:#fff;">full TACT team</strong> before completing the Worksheet. It changes how you think about scope.</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,192,0,0.25); border-top:3px solid var(--green); border-radius:6px; padding:14px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.05rem; color:var(--green); letter-spacing:0.06em; margin-bottom:6px;">03 &nbsp;Workflow Worksheet</div>
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.7); line-height:1.5;">Every step. Every owner. Every decision point mapped. <strong style="color:#fff;">Vague answers</strong> will be challenged and the session rescheduled.</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,192,0,0.25); border-top:3px solid #00CCAA; border-radius:6px; padding:14px;">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:1.05rem; color:#00CCAA; letter-spacing:0.06em; margin-bottom:6px;">04 &nbsp;Data Collected &amp; Cleaned</div>
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.7); line-height:1.5;">Every file identified. File type, quality, and availability confirmed. <strong style="color:#fff;">Not ready by Week 1</strong> means Discovery gets rescheduled.</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- FOOTNOTE -->
+  <div style="background:#000033; border-top:1px solid rgba(255,255,255,0.1); padding:14px 40px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+    <div style="font-size:0.72rem; color:rgba(255,255,255,0.35); line-height:1.8; letter-spacing:0.03em;">
+      AI-TEC &nbsp;·&nbsp; Bureau Veritas Americas<br>
+      Designed by Brenda Li &nbsp;·&nbsp; DxT CSM Team
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:0.72rem; letter-spacing:0.15em; color:rgba(255,255,255,0.2);">
+      PRE-WEEK 1 REQUIRED READING &nbsp;·&nbsp; NOT FOR EXTERNAL DISTRIBUTION
+    </div>
+  </div>
+ 
+</div>
+</body>
+</html>
